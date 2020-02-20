@@ -4,7 +4,7 @@
 const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red   = TGAColor(255, 0,   0,   255);
 
-void drawLine(TGAImage *image, TGAColor color, int x1, int x2, int y1, int y2) {
+void drawLine(TGAImage *image, const TGAColor& color, int x1, int x2, int y1, int y2) {
     int slope_error_prime = 0;
     // If the line is steep, then we swap x with y
     bool steep = false;
