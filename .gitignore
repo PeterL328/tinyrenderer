@@ -1,2 +1,5 @@
+# Cmake
 cmake-build-debug/
 
+# Output files
+*.tga
