@@ -1,37 +1,38 @@
 #include <cmath>
 #include <memory>
 
+#include "geometry.h"
 #include "tgaimage.h"
 #include "model.h"
 
 const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red = TGAColor(255, 0, 0, 255);
 
-void drawLine(TGAImage *image, const TGAColor &color, int x1, int x2, int y1, int y2) {
+void drawLine(TGAImage *image, const TGAColor &color, Vec2i v1, Vec2i v2) {
     int slope_error_prime = 0;
     // If the line is steep, then we swap x with y
     bool steep = false;
-    if (std::abs(y2 - y1) > std::abs(x2 - x1)) {
-        std::swap(x1, y1);
-        std::swap(x2, y2);
+    if (std::abs(v2.y - v1.y) > std::abs(v2.x - v1.x)) {
+        std::swap(v1.x, v1.y);
+        std::swap(v2.x, v2.y);
         steep = true;
     }
-    if (x1 > x2) {
-        std::swap(x1, x2);
-        std::swap(y1, y2);
+    if (v1.x > v2.x) {
+        std::swap(v1.x, v2.x);
+        std::swap(v1.y, v2.y);
     }
-    int y = y1;
-    for (int x = x1; x <= x2; x++) {
+    int y = v1.y;
+    for (int x = v1.x; x <= v2.x; x++) {
         if (steep) {
             image->set(y, x, color);
         } else {
             image->set(x, y, color);
         }
-        int x_delta = x2 - x1;
-        int y_delta = y2 - y1;
+        int x_delta = v2.x - v1.x;
+        int y_delta = v2.y - v1.y;
         int temp_error = 2 * (slope_error_prime + y_delta);
         // Case for slope is negative
-        if (y2 <= y1) {
+        if (v2.y <= v1.y) {
             if (temp_error > -x_delta) {
                 slope_error_prime += y_delta;
             } else {
@@ -59,7 +60,7 @@ void drawFace(TGAImage *image, Model *model, int width, int height) {
             int y1 = static_cast<int>((v0.y + 1.) * height / 2.);
             int x2 = static_cast<int>((v1.x + 1.) * width / 2.);
             int y2 = static_cast<int>((v1.y + 1.) * height / 2.);
-            drawLine(image, white, x1, x2, y1, y2);
+            drawLine(image, white, Vec2i(x1, y1), Vec2i(x2, y2));
         }
     }
 }
