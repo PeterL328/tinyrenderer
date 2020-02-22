@@ -90,17 +90,27 @@ void drawTriangle(TGAImage *image, const TGAColor &color, Vec2i *pts) {
 }
 
 void drawFace(TGAImage *image, Model *model, int width, int height) {
+    Vec3f light_dir(0, 0, -1);
     for (int i = 0; i < model->nfaces(); i++) {
         std::vector<int> face = model->face(i);
-        Vec2i coords[3];
+        Vec2i screen_coords[3];
+        Vec3f world_coords[3];
         for (int j = 0; j < 3; j++) {
             Vec3f point = model->vert(face[j]);
-            coords[j] = Vec2i(
+            screen_coords[j] = Vec2i(
                     static_cast<int>((point.x + 1.) * width / 2.),
                     static_cast<int>((point.y + 1.) * height / 2.)
             );
+            world_coords[j] = point;
         }
-        drawTriangle(image, TGAColor(rand() % 255, rand() % 255, rand() % 255, 255), coords);
+        // The normal vector of a triangle is just cross product of two sides
+        Vec3f normal = (world_coords[2] - world_coords[0]) ^(world_coords[1] - world_coords[0]);
+        normal.normalize();
+        float light_intensity = normal * light_dir;
+        if (light_intensity > 0) {
+            drawTriangle(image, TGAColor(light_intensity * 255, light_intensity * 255, light_intensity * 255, 255),
+                         screen_coords);
+        }
     }
 }
 
