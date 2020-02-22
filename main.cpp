@@ -54,10 +54,9 @@ void drawLine(TGAImage *image, const TGAColor &color, Vec2i v1, Vec2i v2) {
 }
 
 Vec3f barycentric(Vec2i *pts, Vec2i p) {
-    Vec3f u = cross(
-            Vec3f(pts[2].x - pts[0].x, pts[1].x - pts[0].x, pts[0].x - p.x),
-            Vec3f(pts[2].y - pts[0].y, pts[1].y - pts[0].y, pts[0].y - p.y)
-    );
+    // Cross product
+    Vec3f u = Vec3f(pts[2].x - pts[0].x, pts[1].x - pts[0].x, pts[0].x - p.x) ^
+              Vec3f(pts[2].y - pts[0].y, pts[1].y - pts[0].y, pts[0].y - p.y);
     /* `pts` and `P` has integer value as coordinates
        so `abs(u.z)` < 1 means `u.z` is 0, that means
        triangle is degenerate, in this case return something with negative coordinates */
@@ -101,7 +100,7 @@ void drawFace(TGAImage *image, Model *model, int width, int height) {
                     static_cast<int>((point.y + 1.) * height / 2.)
             );
         }
-        drawTriangle(image, TGAColor(rand()%255, rand()%255, rand()%255, 255), coords);
+        drawTriangle(image, TGAColor(rand() % 255, rand() % 255, rand() % 255, 255), coords);
     }
 }
 

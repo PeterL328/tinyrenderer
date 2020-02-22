@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <string.h>
+#include <cstring>
 #include <time.h>
 #include <math.h>
 #include "tgaimage.h"
