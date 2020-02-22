@@ -57,4 +57,6 @@ template <class t> std::ostream& operator<<(std::ostream& s, Vec3<t>& v) {
     return s;
 }
 
+Vec3f cross(Vec3f p0, Vec3f p1);
+
 #endif //__GEOMETRY_H__
