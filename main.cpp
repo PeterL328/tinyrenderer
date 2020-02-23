@@ -1,4 +1,5 @@
 #include <cmath>
+#include <limits>
 #include <memory>
 
 #include "geometry.h"
@@ -53,7 +54,7 @@ void drawLine(TGAImage *image, const TGAColor &color, Vec2i v1, Vec2i v2) {
     }
 }
 
-Vec3f barycentric(Vec2i *pts, Vec2i p) {
+Vec3f barycentric(Vec3f *pts, Vec3f p) {
     // Cross product
     Vec3f u = Vec3f(pts[2].x - pts[0].x, pts[1].x - pts[0].x, pts[0].x - p.x) ^
               Vec3f(pts[2].y - pts[0].y, pts[1].y - pts[0].y, pts[0].y - p.y);
@@ -64,7 +65,7 @@ Vec3f barycentric(Vec2i *pts, Vec2i p) {
     return {1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z};
 }
 
-void drawTriangle(TGAImage *image, const TGAColor &color, Vec2i *pts) {
+void drawTriangle(TGAImage *image, const TGAColor &color, Vec3f *pts, int screen_width, float *depth_buffer) {
     /* Iterate all pixels in a bounding box that contains the triangle
      * and check if the pixel is within the triangle using the
      * barycentric coordinates
@@ -75,33 +76,56 @@ void drawTriangle(TGAImage *image, const TGAColor &color, Vec2i *pts) {
     int y_min = image->get_height() - 1;
     // Iterate the points to find the smallest bounding box that fits the triangle
     for (int i = 0; i < 3; i++) {
-        if (pts[i].x > x_max) x_max = pts[i].x;
-        if (pts[i].x < x_min) x_min = pts[i].x;
-        if (pts[i].y > y_max) y_max = pts[i].y;
-        if (pts[i].y < y_min) y_min = pts[i].y;
+        if (pts[i].x > static_cast<float>(x_max)) x_max = pts[i].x;
+        if (pts[i].x < static_cast<float>(x_min)) x_min = pts[i].x;
+        if (pts[i].y > static_cast<float>(y_max)) y_max = pts[i].y;
+        if (pts[i].y < static_cast<float>(y_min)) y_min = pts[i].y;
     }
+    Vec3f p;
     for (int x = x_min; x <= x_max; x++) {
         for (int y = y_min; y <= y_max; y++) {
-            Vec3f b_check = barycentric(pts, Vec2i(x, y));
-            if (b_check.x < 0 || b_check.y < 0 || b_check.z < 0) continue;
-            image->set(x, y, color);
+            p.x = static_cast<float>(x);
+            p.y = static_cast<float>(y);
+            p.z = 0;
+
+            Vec3f b_coord = barycentric(pts, p);
+            if (b_coord.x < 0 || b_coord.y < 0 || b_coord.z < 0) continue;
+            // The z coord of the pixel on the triangle is the barycentric coord of the point dot with
+            // the z coords of the three points of the triangle
+            for (int i = 0; i < 3; i++) {
+                p.z += pts[i].z * b_coord[i];
+            }
+            if (depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(screen_width))] < p.z) {
+                depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(screen_width))] = p.z;
+                image->set(p.x, p.y, color);
+            }
         }
     }
 }
 
+Vec3f world2screen(Vec3f v, int screen_width, int screen_heigth) {
+    return {
+            static_cast<float>(lround((v.x + 1.) * screen_width / 2. + .5)),
+            static_cast<float>(lround((v.y + 1.) * screen_heigth / 2. + .5)),
+            v.z
+    };
+}
+
 void drawFace(TGAImage *image, Model *model, int width, int height) {
+    // Light source
     Vec3f light_dir(0, 0, -1);
+    // Depth buffer
+    std::unique_ptr<float[]> depth_buffer(new float[width * height]);
+    for (int i = 0; i < width * height; i++) {
+        depth_buffer[i] = -std::numeric_limits<float>::max();
+    }
     for (int i = 0; i < model->nfaces(); i++) {
         std::vector<int> face = model->face(i);
-        Vec2i screen_coords[3];
         Vec3f world_coords[3];
+        Vec3f world2screen_coords[3];
         for (int j = 0; j < 3; j++) {
-            Vec3f point = model->vert(face[j]);
-            screen_coords[j] = Vec2i(
-                    static_cast<int>((point.x + 1.) * width / 2.),
-                    static_cast<int>((point.y + 1.) * height / 2.)
-            );
-            world_coords[j] = point;
+            world_coords[j] = model->vert(face[j]);
+            world2screen_coords[j] = world2screen(world_coords[j], width, height);
         }
         // The normal vector of a triangle is just cross product of two sides
         Vec3f normal = (world_coords[2] - world_coords[0]) ^(world_coords[1] - world_coords[0]);
@@ -109,7 +133,7 @@ void drawFace(TGAImage *image, Model *model, int width, int height) {
         float light_intensity = normal * light_dir;
         if (light_intensity > 0) {
             drawTriangle(image, TGAColor(light_intensity * 255, light_intensity * 255, light_intensity * 255, 255),
-                         screen_coords);
+                         world2screen_coords, width, depth_buffer.get());
         }
     }
 }
