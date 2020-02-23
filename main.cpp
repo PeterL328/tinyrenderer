@@ -115,9 +115,9 @@ void drawFace(TGAImage *image, Model *model, int width, int height) {
     // Light source
     Vec3f light_dir(0, 0, -1);
     // Depth buffer
-    std::unique_ptr<float[]> depth_buffer(new float[width * height]);
+    float depth_buffer[width * height];
     for (int i = 0; i < width * height; i++) {
-        depth_buffer[i] = -std::numeric_limits<float>::max();
+        depth_buffer[i] = std::numeric_limits<float>::lowest();
     }
     for (int i = 0; i < model->nfaces(); i++) {
         std::vector<int> face = model->face(i);
@@ -133,7 +133,7 @@ void drawFace(TGAImage *image, Model *model, int width, int height) {
         float light_intensity = normal * light_dir;
         if (light_intensity > 0) {
             drawTriangle(image, TGAColor(light_intensity * 255, light_intensity * 255, light_intensity * 255, 255),
-                         world2screen_coords, width, depth_buffer.get());
+                         world2screen_coords, width, depth_buffer);
         }
     }
 }
