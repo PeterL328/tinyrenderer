@@ -103,10 +103,10 @@ void drawTriangle(TGAImage *image, const TGAColor &color, Vec3f *pts, int screen
     }
 }
 
-Vec3f world2screen(Vec3f v, int screen_width, int screen_heigth) {
+Vec3f world2screen(Vec3f v, int screen_width, int screen_height) {
     return {
             static_cast<float>(lround((v.x + 1.) * screen_width / 2. + .5)),
-            static_cast<float>(lround((v.y + 1.) * screen_heigth / 2. + .5)),
+            static_cast<float>(lround((v.y + 1.) * screen_height / 2. + .5)),
             v.z
     };
 }
