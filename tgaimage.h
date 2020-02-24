@@ -60,6 +60,14 @@ struct TGAColor {
         }
         return *this;
     }
+
+    TGAColor operator*(float intensity) const {
+        TGAColor res = *this;
+        res.r = static_cast<unsigned char>(static_cast<float>(res.r) * intensity);
+        res.g = static_cast<unsigned char>(static_cast<float>(res.g) * intensity);
+        res.b = static_cast<unsigned char>(static_cast<float>(res.b) * intensity);
+        return res;
+    }
 };
 
 

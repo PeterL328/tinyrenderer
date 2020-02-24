@@ -6,12 +6,18 @@
 #define __MODEL_H__
 
 #include <vector>
+#include <string>
+
 #include "geometry.h"
+#include "tgaimage.h"
 
 class Model {
 private:
     std::vector<Vec3f> verts_;
-    std::vector<std::vector<int> > faces_;
+    std::vector<Vec2f> texture_verts_;
+    std::vector<std::vector<Vec2i> > faces_;
+
+    TGAImage diffusemap_;
 public:
     explicit Model(const char *filename);
 
@@ -19,11 +25,19 @@ public:
 
     int nverts();
 
+    int ntexture_verts();
+
     int nfaces();
 
     Vec3f vert(int i);
 
-    std::vector<int> face(int idx);
+    Vec2f texture_vert(int i);
+
+    std::vector<Vec2i> face(int idx);
+
+    TGAColor diffuse(Vec2f uvf);
+
+    static void load_texture(const std::string& filename, const char *suffix, TGAImage &image);
 };
 
 #endif //__MODEL_H__

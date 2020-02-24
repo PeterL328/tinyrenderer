@@ -65,7 +65,7 @@ Vec3f barycentric(Vec3f *pts, Vec3f p) {
     return {1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z};
 }
 
-void drawTriangle(TGAImage *image, const TGAColor &color, Vec3f *pts, int screen_width, float *depth_buffer) {
+void drawTriangle(TGAImage *image, Model *model, float light_intensity, Vec3f *pts, Vec2f *texture_pts, int screen_width, float *depth_buffer) {
     /* Iterate all pixels in a bounding box that contains the triangle
      * and check if the pixel is within the triangle using the
      * barycentric coordinates
@@ -89,15 +89,17 @@ void drawTriangle(TGAImage *image, const TGAColor &color, Vec3f *pts, int screen
             p.z = 0;
 
             Vec3f b_coord = barycentric(pts, p);
+            Vec2f texture_coord = texture_pts[0] * b_coord[0] + texture_pts[1] * b_coord[1] + texture_pts[2] * b_coord[2];
             if (b_coord.x < 0 || b_coord.y < 0 || b_coord.z < 0) continue;
             // The z coord of the pixel on the triangle is the barycentric coord of the point dot with
             // the z coords of the three points of the triangle
             for (int i = 0; i < 3; i++) {
                 p.z += pts[i].z * b_coord[i];
             }
+            TGAColor color = model->diffuse(texture_coord);
             if (depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(screen_width))] < p.z) {
                 depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(screen_width))] = p.z;
-                image->set(p.x, p.y, color);
+                image->set(p.x, p.y, color * light_intensity);
             }
         }
     }
@@ -120,11 +122,13 @@ void drawFace(TGAImage *image, Model *model, int width, int height) {
         depth_buffer[i] = std::numeric_limits<float>::lowest();
     }
     for (int i = 0; i < model->nfaces(); i++) {
-        std::vector<int> face = model->face(i);
+        std::vector<Vec2i> face = model->face(i);
         Vec3f world_coords[3];
+        Vec2f texture_coords[3];
         Vec3f world2screen_coords[3];
         for (int j = 0; j < 3; j++) {
-            world_coords[j] = model->vert(face[j]);
+            world_coords[j] = model->vert(face[j][0]);
+            texture_coords[j] = model->texture_vert(face[j][1]);
             world2screen_coords[j] = world2screen(world_coords[j], width, height);
         }
         // The normal vector of a triangle is just cross product of two sides
@@ -132,15 +136,15 @@ void drawFace(TGAImage *image, Model *model, int width, int height) {
         normal.normalize();
         float light_intensity = normal * light_dir;
         if (light_intensity > 0) {
-            drawTriangle(image, TGAColor(light_intensity * 255, light_intensity * 255, light_intensity * 255, 255),
-                         world2screen_coords, width, depth_buffer);
+            drawTriangle(image, model, light_intensity, world2screen_coords, texture_coords, width, depth_buffer);
         }
     }
 }
 
 int main(int argc, char **argv) {
-    int height = 512;
-    int width = 512;
+    int width = 1024;
+    int height = 1024;
+
     TGAImage image(width, height, TGAImage::RGB);
     std::unique_ptr<Model> model(new Model("obj/african_head.obj"));
     drawFace(&image, model.get(), width, height);

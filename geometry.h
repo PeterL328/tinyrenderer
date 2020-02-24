@@ -30,9 +30,18 @@ struct Vec2 {
 
     inline Vec2<t> operator-(const Vec2<t> &V) const { return Vec2<t>(u - V.u, v - V.v); }
 
+    // TODO: Fix ordering so f * V and V * f works
     inline Vec2<t> operator*(float f) const { return Vec2<t>(u * f, v * f); }
 
-    inline t operator[](int i) const {
+    inline Vec2<t> operator/(float f) const { return Vec2<t>(u / f, v / f); }
+
+    inline t& operator[](int i) {
+        assert(i >= 0 && i < 2);
+        if (i == 0) return u;
+        else return v;
+    }
+
+    inline const t& operator[](int i) const {
         assert(i >= 0 && i < 2);
         if (i == 0) return u;
         else return v;
@@ -68,9 +77,18 @@ struct Vec3 {
 
     inline Vec3<t> operator*(float f) const { return Vec3<t>(x * f, y * f, z * f); }
 
+    inline Vec3<t> operator/(float f) const { return Vec3<t>(x / f, y / f, z / f); }
+
     inline t operator*(const Vec3<t> &v) const { return x * v.x + y * v.y + z * v.z; }
 
-    inline t operator[](int i) const {
+    inline t& operator[](int i) {
+        assert(i >= 0 && i < 3);
+        if (i == 0) return x;
+        else if (i == 1) return y;
+        else return z;
+    }
+
+    inline const t& operator[](int i) const {
         assert(i >= 0 && i < 3);
         if (i == 0) return x;
         else if (i == 1) return y;
