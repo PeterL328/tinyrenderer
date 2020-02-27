@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cassert>
 #include <iostream>
+#include <vector>
 
 
 template<class t>
@@ -122,5 +123,25 @@ std::ostream &operator<<(std::ostream &s, Vec3<t> &v) {
     s << "(" << v.x << ", " << v.y << ", " << v.z << ")\n";
     return s;
 }
+
+const int DEFAULT_M_SIZE = 4;
+
+class Matrix {
+    std::vector<std::vector<float>> m;
+    int rows{}, cols{};
+public:
+    explicit Matrix (int r=DEFAULT_M_SIZE, int c=DEFAULT_M_SIZE);
+    inline int nrows();
+    inline int ncols();
+
+    static Matrix identity(int dimensions);
+    Matrix transpose();
+    Matrix inverse();
+
+
+    std::vector<float>& operator[](int i);
+    Matrix operator*(Matrix mat);
+    friend std::ostream& operator<<(std::ostream& s, Matrix& m);
+};
 
 #endif //__GEOMETRY_H__

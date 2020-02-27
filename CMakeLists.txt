@@ -3,4 +3,4 @@ project(tinyrenderer)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(tinyrenderer main.cpp tgaimage.cpp tgaimage.h geometry.h model.cpp model.h)
+add_executable(tinyrenderer main.cpp tgaimage.cpp tgaimage.h geometry.h model.cpp model.h geometry.cpp)
