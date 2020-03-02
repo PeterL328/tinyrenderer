@@ -60,7 +60,8 @@ Vec3f barycentric(Vec3f *pts, Vec3f p) {
     return {1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z};
 }
 
-void drawTriangle(TGAImage *image, Model *model, float light_intensity, Vec3f *pts, Vec2f *texture_pts, float *depth_buffer) {
+void drawTriangle(TGAImage *image, Model *model, float light_intensity, Vec3f *pts, Vec2f *texture_pts,
+                  float *depth_buffer) {
     /* Iterate all pixels in a bounding box that contains the triangle
      * and check if the pixel is within the triangle using the
      * barycentric coordinates
@@ -84,7 +85,8 @@ void drawTriangle(TGAImage *image, Model *model, float light_intensity, Vec3f *p
             p.z = 0;
 
             Vec3f b_coord = barycentric(pts, p);
-            Vec2f texture_coord = texture_pts[0] * b_coord[0] + texture_pts[1] * b_coord[1] + texture_pts[2] * b_coord[2];
+            Vec2f texture_coord =
+                    texture_pts[0] * b_coord[0] + texture_pts[1] * b_coord[1] + texture_pts[2] * b_coord[2];
             if (b_coord.x < 0 || b_coord.y < 0 || b_coord.z < 0) continue;
             // The z coord of the pixel on the triangle is the barycentric coord of the point dot with
             // the z coords of the three points of the triangle
@@ -100,17 +102,40 @@ void drawTriangle(TGAImage *image, Model *model, float light_intensity, Vec3f *p
     }
 }
 
-Vec3f world2screen(Vec3f v, int screen_width, int screen_height) {
-    return {
-            static_cast<float>(lround((v.x + 1.) * screen_width / 2. + .5)),
-            static_cast<float>(lround((v.y + 1.) * screen_height / 2. + .5)),
-            v.z
-    };
+Matrix projection_matrix(float camera_distance) {
+    // Create a 4 by 4 matrix
+    Matrix mat = Matrix::identity(4);
+    mat[3][2] = -1.f / camera_distance;
+    return mat;
 }
 
-void drawFace(TGAImage *image, Model *model, int width, int height) {
-    // Light source
-    Vec3f light_dir(0, 0, -1);
+Vec3f m2v(Matrix m) {
+    return {m[0][0] / m[3][0], m[1][0] / m[3][0], m[2][0] / m[3][0]};
+}
+
+Matrix v2m(Vec3f v) {
+    Matrix m(4, 1);
+    m[0][0] = v.x;
+    m[1][0] = v.y;
+    m[2][0] = v.z;
+    m[3][0] = 1.f;
+    return m;
+}
+
+Matrix viewport(int x, int y, int w, int h, int depth) {
+    Matrix m = Matrix::identity(4);
+    m[0][3] = static_cast<float>(x) + static_cast<float>(w) / 2.f;
+    m[1][3] = static_cast<float>(y) + static_cast<float>(h) / 2.f;
+    m[2][3] = static_cast<float>(depth) / 2.f;
+
+    m[0][0] = static_cast<float>(w) / 2.f;
+    m[1][1] = static_cast<float>(h) / 2.f;
+    m[2][2] = static_cast<float>(depth) / 2.f;
+    return m;
+}
+
+
+void drawFace(TGAImage *image, Matrix *p_m, Matrix *v_p, Model *model, Vec3f light_dir, int width, int height) {
     // Depth buffer
     float depth_buffer[width * height];
     for (int i = 0; i < width * height; i++) {
@@ -124,7 +149,7 @@ void drawFace(TGAImage *image, Model *model, int width, int height) {
         for (int j = 0; j < 3; j++) {
             world_coords[j] = model->vert(face[j][0]);
             texture_coords[j] = model->texture_vert(face[j][1]);
-            world2screen_coords[j] = world2screen(world_coords[j], width, height);
+            world2screen_coords[j] = m2v(*v_p * *p_m * v2m(world_coords[j]));
         }
         // The normal vector of a triangle is just cross product of two sides
         Vec3f normal = (world_coords[2] - world_coords[0]) ^(world_coords[1] - world_coords[0]);
@@ -137,12 +162,18 @@ void drawFace(TGAImage *image, Model *model, int width, int height) {
 }
 
 int main(int argc, char **argv) {
-    int width = 1024;
-    int height = 1024;
+    int width = 512;
+    int height = 512;
+    float camera_distance_on_z = 3.f;
+    int screen_depth = 255;
 
     TGAImage image(width, height, TGAImage::RGB);
     std::unique_ptr<Model> model(new Model("obj/african_head.obj"));
-    drawFace(&image, model.get(), width, height);
+
+    Matrix p_matrix = projection_matrix(camera_distance_on_z);
+    Matrix v_port = viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4, screen_depth);
+    Vec3f light_source(0, 0, -1);
+    drawFace(&image, &p_matrix, &v_port, model.get(), light_source, width, height);
 
     // Origin at the left bottom corner of the image
     image.flip_vertically();
