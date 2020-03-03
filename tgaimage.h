@@ -105,7 +105,7 @@ public:
 
     TGAColor get(int x, int y);
 
-    bool set(int x, int y, TGAColor c);
+    bool set(int x, int y, TGAColor const &c);
 
     ~TGAImage();
 
