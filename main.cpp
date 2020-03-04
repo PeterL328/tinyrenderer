@@ -102,6 +102,21 @@ void drawTriangle(TGAImage *image, Model *model, float light_intensity, Vec3f *p
     }
 }
 
+Matrix camera_matrix(Vec3f eye, Vec3f center, Vec3f up) {
+    Vec3f z = (eye - center).normalize();
+    Vec3f x = (up ^ z).normalize();
+    Vec3f y = (z ^ x).normalize();
+    Matrix model_view = Matrix::identity(4);
+    Matrix translation = Matrix::identity(4);
+    for (int i = 0; i < 3; i++) {
+        model_view[0][i] = x[i];
+        model_view[1][i] = y[i];
+        model_view[2][i] = z[i];
+        translation[i][3] = -center[i];
+    }
+    return model_view * translation;
+}
+
 Matrix projection_matrix(float camera_distance) {
     // Create a 4 by 4 matrix
     Matrix mat = Matrix::identity(4);
@@ -135,7 +150,7 @@ Matrix viewport(int x, int y, int w, int h, int depth) {
 }
 
 
-void drawFace(TGAImage *image, Matrix *p_m, Matrix *v_p, Model *model, Vec3f light_dir, int width, int height) {
+void drawFace(TGAImage *image, Matrix *p_m, Matrix *v_p, Matrix*c_m, Model *model, Vec3f light_dir, int width, int height) {
     // Depth buffer
     float depth_buffer[width * height];
     for (int i = 0; i < width * height; i++) {
@@ -149,7 +164,7 @@ void drawFace(TGAImage *image, Matrix *p_m, Matrix *v_p, Model *model, Vec3f lig
         for (int j = 0; j < 3; j++) {
             world_coords[j] = model->vert(face[j][0]);
             texture_coords[j] = model->texture_vert(face[j][1]);
-            world2screen_coords[j] = m2v(*v_p * *p_m * v2m(world_coords[j]));
+            world2screen_coords[j] = m2v(*v_p * *p_m * *c_m * v2m(world_coords[j]));
         }
         // The normal vector of a triangle is just cross product of two sides
         Vec3f normal = (world_coords[2] - world_coords[0]) ^(world_coords[1] - world_coords[0]);
@@ -170,10 +185,15 @@ int main(int argc, char **argv) {
     TGAImage image(width, height, TGAImage::RGB);
     std::unique_ptr<Model> model(new Model("obj/african_head.obj"));
 
+    // View transformation setup
+    Vec3f light_source(0, 0, -1);
+    Vec3f eye(1, 1, 3);
+    Vec3f up(0, 1, 0);
+    Vec3f model_center(0, 0, 0);
     Matrix p_matrix = projection_matrix(camera_distance_on_z);
     Matrix v_port = viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4, screen_depth);
-    Vec3f light_source(0, 0, -1);
-    drawFace(&image, &p_matrix, &v_port, model.get(), light_source, width, height);
+    Matrix c_matrix = camera_matrix(eye, model_center, up);
+    drawFace(&image, &p_matrix, &v_port, &c_matrix, model.get(), light_source, width, height);
 
     // Origin at the left bottom corner of the image
     image.flip_vertically();
