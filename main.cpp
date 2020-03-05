@@ -177,10 +177,10 @@ void drawFace(TGAImage *image, Matrix *p_m, Matrix *v_p, Matrix*c_m, Model *mode
 }
 
 int main(int argc, char **argv) {
-    int width = 512;
-    int height = 512;
+    const int width = 512;
+    const int height = 512;
+    const int screen_depth = 255;
     float camera_distance_on_z = 3.f;
-    int screen_depth = 255;
 
     TGAImage image(width, height, TGAImage::RGB);
     std::unique_ptr<Model> model(new Model("obj/african_head.obj"));
