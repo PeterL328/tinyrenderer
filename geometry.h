@@ -140,7 +140,8 @@ public:
 
 
     std::vector<float>& operator[](int i);
-    Matrix operator*(Matrix mat);
+    const std::vector<float>& operator[](int i) const;
+    Matrix operator*(const Matrix &mat);
     friend std::ostream& operator<<(std::ostream& s, Matrix& m);
 };
 

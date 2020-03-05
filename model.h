@@ -35,7 +35,7 @@ public:
 
     std::vector<Vec2i> face(int idx);
 
-    TGAColor diffuse(Vec2f uvf);
+    TGAColor diffuse(const Vec2f &uvf);
 
     static void load_texture(const std::string& filename, const char *suffix, TGAImage &image);
 };

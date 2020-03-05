@@ -82,7 +82,7 @@ void Model::load_texture(const std::string &filename, const char *suffix, TGAIma
     }
 }
 
-TGAColor Model::diffuse(Vec2f uvf) {
+TGAColor Model::diffuse(const Vec2f &uvf) {
     Vec2i uv(
             uvf.x * static_cast<float>(diffusemap_.get_width()),
             uvf.y * static_cast<float>(diffusemap_.get_height())

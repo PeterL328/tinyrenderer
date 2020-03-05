@@ -60,7 +60,13 @@ std::vector<float> &Matrix::operator[](int i) {
     return m[i];
 }
 
-Matrix Matrix::operator*(Matrix mat) {
+const std::vector<float> &Matrix::operator[](int i) const {
+    assert(i >= 0 && i < rows);
+    return m[i];
+}
+
+
+Matrix Matrix::operator*(const Matrix &mat) {
     assert(cols == mat.rows);
     Matrix res(rows, mat.cols);
     for (int i = 0; i < rows; i++) {

@@ -49,7 +49,7 @@ void drawLine(TGAImage *image, const TGAColor &color, Vec2i v1, Vec2i v2) {
     }
 }
 
-Vec3f barycentric(Vec3f *pts, Vec3f p) {
+Vec3f barycentric(Vec3f *pts, const Vec3f &p) {
     // Cross product
     Vec3f u = Vec3f(pts[2].x - pts[0].x, pts[1].x - pts[0].x, pts[0].x - p.x) ^
               Vec3f(pts[2].y - pts[0].y, pts[1].y - pts[0].y, pts[0].y - p.y);
@@ -102,7 +102,7 @@ void drawTriangle(TGAImage *image, Model *model, float light_intensity, Vec3f *p
     }
 }
 
-Matrix camera_matrix(Vec3f eye, Vec3f center, Vec3f up) {
+Matrix camera_matrix(const Vec3f &eye, const Vec3f &center, const Vec3f &up) {
     Vec3f z = (eye - center).normalize();
     Vec3f x = (up ^ z).normalize();
     Vec3f y = (z ^ x).normalize();
@@ -124,11 +124,11 @@ Matrix projection_matrix(float camera_distance) {
     return mat;
 }
 
-Vec3f m2v(Matrix m) {
+Vec3f m2v(const Matrix &m) {
     return {m[0][0] / m[3][0], m[1][0] / m[3][0], m[2][0] / m[3][0]};
 }
 
-Matrix v2m(Vec3f v) {
+Matrix v2m(const Vec3f &v) {
     Matrix m(4, 1);
     m[0][0] = v.x;
     m[1][0] = v.y;
@@ -150,7 +150,7 @@ Matrix viewport(int x, int y, int w, int h, int depth) {
 }
 
 
-void drawFace(TGAImage *image, Matrix *p_m, Matrix *v_p, Matrix*c_m, Model *model, Vec3f light_dir, int width, int height) {
+void drawFace(TGAImage *image, Matrix *p_m, Matrix *v_p, Matrix*c_m, Model *model, const Vec3f &light_dir, int width, int height) {
     // Depth buffer
     float depth_buffer[width * height];
     for (int i = 0; i < width * height; i++) {
