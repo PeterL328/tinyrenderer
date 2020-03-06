@@ -139,8 +139,9 @@ public:
     Matrix inverse();
 
 
-    std::vector<float>& operator[](int i);
     const std::vector<float>& operator[](int i) const;
+    std::vector<float>& operator[](int i);
+    Matrix operator*(const Matrix &mat) const;
     Matrix operator*(const Matrix &mat);
     friend std::ostream& operator<<(std::ostream& s, Matrix& m);
 };

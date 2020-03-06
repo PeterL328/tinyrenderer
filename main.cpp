@@ -49,7 +49,7 @@ void drawLine(TGAImage *image, const TGAColor &color, Vec2i v1, Vec2i v2) {
     }
 }
 
-Vec3f barycentric(Vec3f *pts, const Vec3f &p) {
+Vec3f barycentric(const Vec3f *pts, const Vec3f &p) {
     // Cross product
     Vec3f u = Vec3f(pts[2].x - pts[0].x, pts[1].x - pts[0].x, pts[0].x - p.x) ^
               Vec3f(pts[2].y - pts[0].y, pts[1].y - pts[0].y, pts[0].y - p.y);
@@ -60,8 +60,7 @@ Vec3f barycentric(Vec3f *pts, const Vec3f &p) {
     return {1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z};
 }
 
-void drawTriangle(TGAImage *image, Model *model, float light_intensity, Vec3f *pts, Vec2f *texture_pts,
-                  float *depth_buffer) {
+void drawTriangle(TGAImage *image, Model *model, const float light_intensity, const Vec3f *pts, const Vec2f *texture_pts, float *depth_buffer) {
     /* Iterate all pixels in a bounding box that contains the triangle
      * and check if the pixel is within the triangle using the
      * barycentric coordinates
@@ -117,7 +116,7 @@ Matrix camera_matrix(const Vec3f &eye, const Vec3f &center, const Vec3f &up) {
     return model_view * translation;
 }
 
-Matrix projection_matrix(float camera_distance) {
+Matrix projection_matrix(const float camera_distance) {
     // Create a 4 by 4 matrix
     Matrix mat = Matrix::identity(4);
     mat[3][2] = -1.f / camera_distance;
@@ -137,7 +136,7 @@ Matrix v2m(const Vec3f &v) {
     return m;
 }
 
-Matrix viewport(int x, int y, int w, int h, int depth) {
+Matrix viewport(const int x, const int y, const int w, const int h, const int depth) {
     Matrix m = Matrix::identity(4);
     m[0][3] = static_cast<float>(x) + static_cast<float>(w) / 2.f;
     m[1][3] = static_cast<float>(y) + static_cast<float>(h) / 2.f;
@@ -150,7 +149,8 @@ Matrix viewport(int x, int y, int w, int h, int depth) {
 }
 
 
-void drawFace(TGAImage *image, Matrix *p_m, Matrix *v_p, Matrix*c_m, Model *model, const Vec3f &light_dir, int width, int height) {
+void drawFace(TGAImage *image, const Matrix *p_m, const Matrix *v_p, const Matrix *c_m, Model *model,
+              const Vec3f &light_dir, const int width, const int height) {
     // Depth buffer
     float depth_buffer[width * height];
     for (int i = 0; i < width * height; i++) {
@@ -180,7 +180,7 @@ int main(int argc, char **argv) {
     const int width = 512;
     const int height = 512;
     const int screen_depth = 255;
-    float camera_distance_on_z = 3.f;
+    const float camera_distance_on_z = 3.f;
 
     TGAImage image(width, height, TGAImage::RGB);
     std::unique_ptr<Model> model(new Model("obj/african_head.obj"));

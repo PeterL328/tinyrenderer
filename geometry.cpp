@@ -55,7 +55,6 @@ std::ostream &operator<<(std::ostream &s, Matrix &m) {
     return s;
 }
 
-
 const std::vector<float> &Matrix::operator[](int i) const {
     assert(i >= 0 && i < rows);
     return m[i];
@@ -65,8 +64,7 @@ std::vector<float> &Matrix::operator[](int i) {
     return const_cast<std::vector<float> &>(static_cast<const Matrix &>(*this)[i]);
 }
 
-
-Matrix Matrix::operator*(const Matrix &mat) {
+Matrix Matrix::operator*(const Matrix &mat) const {
     assert(cols == mat.rows);
     Matrix res(rows, mat.cols);
     for (int i = 0; i < rows; i++) {
@@ -80,3 +78,8 @@ Matrix Matrix::operator*(const Matrix &mat) {
     }
     return res;
 }
+
+Matrix Matrix::operator*(const Matrix &mat) {
+    return static_cast<const Matrix &>(*this) * mat;
+}
+
