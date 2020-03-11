@@ -128,7 +128,7 @@ const int DEFAULT_M_SIZE = 4;
 
 class Matrix {
     std::vector<std::vector<float>> m;
-    int rows{}, cols{};
+    int rows, cols;
 public:
     explicit Matrix (int r=DEFAULT_M_SIZE, int c=DEFAULT_M_SIZE);
     inline int nrows();
