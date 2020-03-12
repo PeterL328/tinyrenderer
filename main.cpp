@@ -1,5 +1,7 @@
 #include <memory>
 
+#include <CLI/CLI.hpp>
+
 #include "geometry.h"
 #include "tgaimage.h"
 #include "tiny_gl.h"
@@ -7,13 +9,23 @@
 
 
 int main(int argc, char **argv) {
-    const int width = 512;
-    const int height = 512;
+    // Parse arguments
+    CLI::App app{"Tiny rendering engine"};
+
+    int width = 512;
+    int height = 512;
+    std::string object_file_name = "obj/african_head.obj";
     const int screen_depth = 255;
     const float camera_distance_on_z = 3.f;
 
+    app.add_option("--width",  width, "The width of the final rendering");
+    app.add_option("--height", height, "The height of the final rendering");
+    app.add_option("--obj", object_file_name, "The path to the object file for rendering");
+
+    CLI11_PARSE(app, argc, argv);
+
     TGAImage image(width, height, TGAImage::RGB);
-    std::unique_ptr<Model> model(new Model("obj/african_head.obj"));
+    std::unique_ptr<Model> model(new Model(object_file_name));
 
     // View transformation setup
     Vec3f light_source(0, 0, -1);

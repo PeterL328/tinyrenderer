@@ -19,7 +19,7 @@ private:
 
     TGAImage diffusemap_;
 public:
-    explicit Model(const char *filename);
+    explicit Model(const std::string &filename);
 
     ~Model();
 

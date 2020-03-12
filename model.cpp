@@ -9,7 +9,7 @@
 #include <vector>
 #include "model.h"
 
-Model::Model(const char *filename) : verts_(), texture_verts_(), faces_() {
+Model::Model(const std::string &filename) : verts_(), texture_verts_(), faces_() {
     std::ifstream in;
     in.open(filename, std::ifstream::in);
     if (in.fail()) return;
