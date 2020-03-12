@@ -5,8 +5,8 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <time.h>
-#include <math.h>
+#include <ctime>
+#include <cmath>
 #include "tgaimage.h"
 
 TGAImage::TGAImage() : data(nullptr), width(0), height(0), bytespp(0) {
