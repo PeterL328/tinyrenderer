@@ -3,3 +3,6 @@ cmake-build-*/
 
 # Output files
 *.tga
+
+# Allow example objects and textures files
+!obj/*
