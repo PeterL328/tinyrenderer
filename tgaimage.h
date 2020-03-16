@@ -93,9 +93,9 @@ public:
 
     TGAImage(const TGAImage &img);
 
-    bool read_tga_file(const char *filename);
+    bool read_tga_file(const std::string &filename);
 
-    bool write_tga_file(const char *filename, bool rle = true);
+    bool write_tga_file(const std::string &filename, bool rle = true);
 
     bool flip_horizontally();
 

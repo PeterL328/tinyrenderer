@@ -14,18 +14,20 @@ int main(int argc, char **argv) {
 
     int width = 512;
     int height = 512;
-    std::string object_file_name = "obj/african_head.obj";
     const int screen_depth = 255;
     const float camera_distance_on_z = 3.f;
+    std::string object_file_path = "obj/african_head.obj";
+    std::string output_file_path = "output.tga";
 
     app.add_option("--width",  width, "The width of the final rendering");
     app.add_option("--height", height, "The height of the final rendering");
-    app.add_option("--obj", object_file_name, "The path to the object file for rendering");
+    app.add_option("--obj", object_file_path, "The path to the object file for rendering");
+    app.add_option("--output,-o", output_file_path, "The path to the output rendering file");
 
     CLI11_PARSE(app, argc, argv);
 
     TGAImage image(width, height, TGAImage::RGB);
-    std::unique_ptr<Model> model(new Model(object_file_name));
+    std::unique_ptr<Model> model(new Model(object_file_path));
 
     // View transformation setup
     Vec3f light_source(0, 0, -1);
@@ -39,6 +41,6 @@ int main(int argc, char **argv) {
 
     // Origin at the left bottom corner of the image
     image.flip_vertically();
-    image.write_tga_file("output.tga");
+    image.write_tga_file(output_file_path);
     return 0;
 }
