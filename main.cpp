@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     std::string object_file_path = "obj/african_head.obj";
     std::string output_file_path = "output.tga";
 
-    app.add_option("--width",  width, "The width of the final rendering");
+    app.add_option("--width", width, "The width of the final rendering");
     app.add_option("--height", height, "The height of the final rendering");
     app.add_option("--obj", object_file_path, "The path to the object file for rendering");
     app.add_option("--output,-o", output_file_path, "The path to the output rendering file");

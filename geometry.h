@@ -36,13 +36,13 @@ struct Vec2 {
 
     inline Vec2<t> operator/(float f) const { return Vec2<t>(u / f, v / f); }
 
-    inline t& operator[](int i) {
+    inline t &operator[](int i) {
         assert(i >= 0 && i < 2);
         if (i == 0) return u;
         else return v;
     }
 
-    inline const t& operator[](int i) const {
+    inline const t &operator[](int i) const {
         assert(i >= 0 && i < 2);
         if (i == 0) return u;
         else return v;
@@ -82,14 +82,14 @@ struct Vec3 {
 
     inline t operator*(const Vec3<t> &v) const { return x * v.x + y * v.y + z * v.z; }
 
-    inline t& operator[](int i) {
+    inline t &operator[](int i) {
         assert(i >= 0 && i < 3);
         if (i == 0) return x;
         else if (i == 1) return y;
         else return z;
     }
 
-    inline const t& operator[](int i) const {
+    inline const t &operator[](int i) const {
         assert(i >= 0 && i < 3);
         if (i == 0) return x;
         else if (i == 1) return y;
@@ -130,20 +130,27 @@ class Matrix {
     std::vector<std::vector<float>> m;
     int rows, cols;
 public:
-    explicit Matrix (int r=DEFAULT_M_SIZE, int c=DEFAULT_M_SIZE);
+    explicit Matrix(int r = DEFAULT_M_SIZE, int c = DEFAULT_M_SIZE);
+
     inline int nrows();
+
     inline int ncols();
 
     static Matrix identity(int dimensions);
+
     Matrix transpose();
+
     Matrix inverse();
 
+    const std::vector<float> &operator[](int i) const;
 
-    const std::vector<float>& operator[](int i) const;
-    std::vector<float>& operator[](int i);
+    std::vector<float> &operator[](int i);
+
     Matrix operator*(const Matrix &mat) const;
+
     Matrix operator*(const Matrix &mat);
-    friend std::ostream& operator<<(std::ostream& s, Matrix& m);
+
+    friend std::ostream &operator<<(std::ostream &s, Matrix &m);
 };
 
 #endif //__GEOMETRY_H__

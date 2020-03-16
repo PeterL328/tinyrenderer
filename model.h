@@ -37,7 +37,7 @@ public:
 
     TGAColor diffuse(const Vec2f &uvf);
 
-    static void load_texture(const std::string& filename, const char *suffix, TGAImage &image);
+    static void load_texture(const std::string &filename, const char *suffix, TGAImage &image);
 };
 
 #endif //__MODEL_H__
