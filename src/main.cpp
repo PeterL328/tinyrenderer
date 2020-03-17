@@ -2,10 +2,10 @@
 
 #include <CLI/CLI.hpp>
 
-#include "geometry.h"
-#include "tgaimage.h"
-#include "tiny_gl.h"
-#include "model.h"
+#include "geometry/geometry.h"
+#include "loader/tgaimage.h"
+#include "core/tiny_gl.h"
+#include "model/model.h"
 
 
 int main(int argc, char **argv) {

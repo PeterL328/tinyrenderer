@@ -8,8 +8,8 @@
 #include <vector>
 #include <string>
 
-#include "geometry.h"
-#include "tgaimage.h"
+#include "geometry/geometry.h"
+#include "loader/tgaimage.h"
 
 class Model {
 private:
