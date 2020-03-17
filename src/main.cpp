@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     int height = 512;
     const int screen_depth = 255;
     const float camera_distance_on_z = 3.f;
-    std::string object_file_path = "obj/african_head.obj";
+    std::string object_file_path = "examples/african_head.obj";
     std::string output_file_path = "output.tga";
 
     app.add_option("--width", width, "The width of the final rendering");

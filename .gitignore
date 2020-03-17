@@ -5,4 +5,4 @@ cmake-build-*/
 *.tga
 
 # Allow example objects and textures files
-!obj/*
+!examples/*
