@@ -5,7 +5,7 @@
 #include "geometry/geometry.h"
 #include "loader/tgaimage.h"
 #include "core/tiny_gl.h"
-#include "model/model.h"
+#include "core/model.h"
 
 
 int main(int argc, char **argv) {

@@ -10,7 +10,7 @@
 #include "geometry/geometry.h"
 #include "loader/tgaimage.h"
 #include "tiny_gl.h"
-#include "model/model.h"
+#include "model.h"
 
 namespace tiny_gl {
     void drawLine(TGAImage *image, const TGAColor &color, Vec2i v1, Vec2i v2);
