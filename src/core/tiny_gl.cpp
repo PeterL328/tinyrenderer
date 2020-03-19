@@ -48,8 +48,8 @@ namespace tiny_gl {
     }
 
     void
-    drawTriangle(TGAImage *image, Model *model, const float light_intensity, const Vec3f *pts, const Vec2f *texture_pts,
-                 float *depth_buffer) {
+    drawTriangle(TGAImage *image, Model *model, const Vec3f &light_dir, const Vec3f *pts, const Vec2f *texture_pts,
+                 const Vec3f *normal_pts, float *depth_buffer) {
         /* Iterate all pixels in a bounding box that contains the triangle
          * and check if the pixel is within the triangle using the
          * barycentric coordinates
@@ -65,7 +65,7 @@ namespace tiny_gl {
             if (pts[i].y > static_cast<float>(y_max)) y_max = pts[i].y;
             if (pts[i].y < static_cast<float>(y_min)) y_min = pts[i].y;
         }
-        Vec3f p;
+        Vec3f p{};
         for (int x = x_min; x <= x_max; x++) {
             for (int y = y_min; y <= y_max; y++) {
                 p.x = static_cast<float>(x);
@@ -73,16 +73,19 @@ namespace tiny_gl {
                 p.z = 0;
 
                 Vec3f b_coord = barycentric(pts, p);
-                Vec2f texture_coord =
-                        texture_pts[0] * b_coord[0] + texture_pts[1] * b_coord[1] + texture_pts[2] * b_coord[2];
                 if (b_coord.x < 0 || b_coord.y < 0 || b_coord.z < 0) continue;
+                Vec2f texture_coord{};
+                Vec3f normal{};
                 // The z coord of the pixel on the triangle is the barycentric coord of the point dot with
                 // the z coords of the three points of the triangle
                 for (int i = 0; i < 3; i++) {
                     p.z += pts[i].z * b_coord[i];
+                    texture_coord += texture_pts[i] * b_coord[i];
+                    normal += normal_pts[i] * b_coord[i];
                 }
                 TGAColor color = model->diffuse(texture_coord);
-                if (depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(image->get_width()))] < p.z) {
+                float light_intensity = normal * light_dir * -1;
+                if (light_intensity > 0 && depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(image->get_width()))] < p.z) {
                     depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(image->get_width()))] = p.z;
                     image->set(p.x, p.y, color * light_intensity);
                 }
@@ -98,22 +101,17 @@ namespace tiny_gl {
             depth_buffer[i] = std::numeric_limits<float>::lowest();
         }
         for (int i = 0; i < model->nfaces(); i++) {
-            std::vector<Vec2i> face = model->face(i);
             Vec3f world_coords[3];
+            Vec3f normal_coords[3];
             Vec2f texture_coords[3];
             Vec3f world2screen_coords[3];
             for (int j = 0; j < 3; j++) {
-                world_coords[j] = model->vert(face[j][0]);
-                texture_coords[j] = model->texture_vert(face[j][1]);
+                world_coords[j] = model->vert(i, j);
+                texture_coords[j] = model->texture_vert(i, j);
+                normal_coords[j] = model->normal(i, j);
                 world2screen_coords[j] = hom2cart(*v_p * *p_m * *c_m * cart2hom(world_coords[j]));
             }
-            // The normal vector of a triangle is just cross product of two sides
-            Vec3f normal = (world_coords[2] - world_coords[0]) ^(world_coords[1] - world_coords[0]);
-            normal.normalize();
-            float light_intensity = normal * light_dir;
-            if (light_intensity > 0) {
-                drawTriangle(image, model, light_intensity, world2screen_coords, texture_coords, depth_buffer);
-            }
+            drawTriangle(image, model, light_dir, world2screen_coords, texture_coords, normal_coords, depth_buffer);
         }
     }
 

@@ -14,8 +14,9 @@
 class Model {
 private:
     std::vector<Vec3f> verts_;
+    std::vector<Vec3f> norms_;
     std::vector<Vec2f> texture_verts_;
-    std::vector<std::vector<Vec2i> > faces_;
+    std::vector<std::vector<Vec3i> > faces_;
 
     TGAImage diffusemap_;
 public:
@@ -31,9 +32,17 @@ public:
 
     Vec3f vert(int i);
 
+    Vec3f vert(int iface, int nthvert);
+
     Vec2f texture_vert(int i);
 
-    std::vector<Vec2i> face(int idx);
+    Vec2f texture_vert(int iface, int nthvert);
+
+    Vec3f normal(int i);
+
+    Vec3f normal(int iface, int nthvert);
+
+    std::vector<Vec3i> face(int idx);
 
     TGAColor diffuse(const Vec2f &uvf);
 

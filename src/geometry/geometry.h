@@ -48,6 +48,12 @@ struct Vec2 {
         else return v;
     }
 
+    inline Vec2<t>& operator+=(const Vec2<t> &V) {
+        u += V.u;
+        v += V.v;
+        return *this;
+    }
+
     template<class>
     friend std::ostream &operator<<(std::ostream &s, Vec2<t> &v);
 };
@@ -94,6 +100,13 @@ struct Vec3 {
         if (i == 0) return x;
         else if (i == 1) return y;
         else return z;
+    }
+
+    inline Vec3<t>& operator+=(const Vec3<t> &V) {
+        x += V.x;
+        y += V.y;
+        z += V.z;
+        return *this;
     }
 
     float norm() const { return std::sqrt(x * x + y * y + z * z); }

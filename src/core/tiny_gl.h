@@ -16,8 +16,8 @@ namespace tiny_gl {
     void drawLine(TGAImage *image, const TGAColor &color, Vec2i v1, Vec2i v2);
 
     void
-    drawTriangle(TGAImage *image, Model *model, const float light_intensity, const Vec3f *pts, const Vec2f *texture_pts,
-                 float *depth_buffer);
+    drawTriangle(TGAImage *image, Model *model, const Vec3f &light_dir, const Vec3f *pts, const Vec2f *texture_pts,
+                 const Vec3f *normal_pts, float *depth_buffer);
 
     void drawFace(TGAImage *image, const Matrix *p_m, const Matrix *v_p, const Matrix *c_m, Model *model,
                   const Vec3f &light_dir, const int width, const int height);
