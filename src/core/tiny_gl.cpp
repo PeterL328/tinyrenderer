@@ -48,8 +48,8 @@ namespace tiny_gl {
     }
 
     void
-    drawTriangle(TGAImage *image, Model *model, const Vec3f &light_dir, const Vec3f *pts, const Vec2f *texture_pts,
-                 const Vec3f *normal_pts, float *depth_buffer) {
+    drawTriangle(TGAImage *image, Model *model, const Shader &shader, const Vec3f *pts, const Vec2f *texture_pts,
+                 const Vec3f *normal_pts, float *depth_buffer, const Vec3f& camera_source) {
         /* Iterate all pixels in a bounding box that contains the triangle
          * and check if the pixel is within the triangle using the
          * barycentric coordinates
@@ -84,17 +84,17 @@ namespace tiny_gl {
                     normal += normal_pts[i] * b_coord[i];
                 }
                 TGAColor color = model->diffuse(texture_coord);
-                float light_intensity = normal * light_dir * -1;
-                if (light_intensity > 0 && depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(image->get_width()))] < p.z) {
+                if (depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(image->get_width()))] < p.z) {
                     depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(image->get_width()))] = p.z;
-                    image->set(p.x, p.y, color * light_intensity);
+                    TGAColor shaded_color = shader.get_shaded_color(color, normal, camera_source, p);
+                    image->set(p.x, p.y, shaded_color);
                 }
             }
         }
     }
 
-    void drawFace(TGAImage *image, const Matrix *p_m, const Matrix *v_p, const Matrix *c_m, Model *model,
-                  const Vec3f &light_dir, const int width, const int height) {
+    void drawFace(TGAImage *image, const Matrix &p_m, const Matrix &v_p, const Matrix &c_m, Model *model,
+                  const Shader &shader, const Vec3f& camera_source, const int width, const int height) {
         // Depth buffer
         float depth_buffer[width * height];
         for (int i = 0; i < width * height; i++) {
@@ -109,9 +109,9 @@ namespace tiny_gl {
                 world_coords[j] = model->vert(i, j);
                 texture_coords[j] = model->texture_vert(i, j);
                 normal_coords[j] = model->normal(i, j);
-                world2screen_coords[j] = hom2cart(*v_p * *p_m * *c_m * cart2hom(world_coords[j]));
+                world2screen_coords[j] = hom2cart(v_p * p_m * c_m * cart2hom(world_coords[j]));
             }
-            drawTriangle(image, model, light_dir, world2screen_coords, texture_coords, normal_coords, depth_buffer);
+            drawTriangle(image, model, shader, world2screen_coords, texture_coords, normal_coords, depth_buffer, camera_source);
         }
     }
 

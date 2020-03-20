@@ -6,6 +6,7 @@
 #include "loader/tgaimage.h"
 #include "core/tiny_gl.h"
 #include "core/model.h"
+#include "core/shader.h"
 
 
 int main(int argc, char **argv) {
@@ -30,14 +31,17 @@ int main(int argc, char **argv) {
     std::unique_ptr<Model> model(new Model(object_file_path));
 
     // View transformation setup
-    Vec3f light_source(0, 0, -1);
-    Vec3f eye(1, 1, 3);
+    Vec3f light_dir(0.5, 0.5, -1);
+    Vec3f eye(0, 0, 200);
     Vec3f up(0, 1, 0);
     Vec3f model_center(0, 0, 0);
     Matrix p_matrix = tiny_gl::projection_matrix(camera_distance_on_z);
     Matrix v_port = tiny_gl::viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4, screen_depth);
     Matrix c_matrix = tiny_gl::camera_matrix(eye, model_center, up);
-    tiny_gl::drawFace(&image, &p_matrix, &v_port, &c_matrix, model.get(), light_source, width, height);
+
+    // Shader setup
+    Shader shader{0.2f, 0.6f, 122.f, 5, light_dir};
+    tiny_gl::drawFace(&image, p_matrix, v_port, c_matrix, model.get(), shader, eye, width, height);
 
     // Origin at the left bottom corner of the image
     image.flip_vertically();
