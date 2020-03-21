@@ -36,13 +36,13 @@ int main(int argc, char **argv) {
     Geometry::Vec3f eye(-100, 0, 100);
     Geometry::Vec3f up(0, 1, 0);
     Geometry::Vec3f model_center(0, 0, 0);
-    Geometry::Matrix p_matrix = tiny_gl::projection_matrix(camera_distance_on_z);
-    Geometry::Matrix v_port = tiny_gl::viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4, screen_depth);
-    Geometry::Matrix c_matrix = tiny_gl::camera_matrix(eye, model_center, up);
+    Geometry::Matrix p_matrix = TinyGL::projection_matrix(camera_distance_on_z);
+    Geometry::Matrix v_port = TinyGL::viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4, screen_depth);
+    Geometry::Matrix c_matrix = TinyGL::camera_matrix(eye, model_center, up);
 
     // Shader setup
     Shader shader{0.2f, 0.6f, 100.f, 5, light_dir};
-    tiny_gl::drawFace(&image, p_matrix, v_port, c_matrix, model.get(), shader, eye, width, height);
+    TinyGL::drawFace(&image, p_matrix, v_port, c_matrix, model.get(), shader, eye, width, height);
 
     // Origin at the left bottom corner of the image
     image.flip_vertically();

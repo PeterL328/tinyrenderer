@@ -7,7 +7,7 @@
 
 using namespace Geometry;
 
-namespace tiny_gl {
+namespace TinyGL {
     void drawLine(TGAImage *image, const TGAColor &color, Vec2i v1, Vec2i v2) {
         int slope_error_prime = 0;
         // If the line is steep, then we swap x with y

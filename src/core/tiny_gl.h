@@ -15,7 +15,7 @@
 #include "shader.h"
 
 
-namespace tiny_gl {
+namespace TinyGL {
     void drawLine(TGAImage *image, const TGAColor &color, Geometry::Vec2i v1, Geometry::Vec2i v2);
 
     void
