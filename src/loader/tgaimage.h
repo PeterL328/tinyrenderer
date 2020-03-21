@@ -2,10 +2,11 @@
 // Created by peter on 2020-02-19.
 //
 
-#ifndef __IMAGE_H__
-#define __IMAGE_H__
+#ifndef TINYRENDERER_TGAIMAGE_H
+#define TINYRENDERER_TGAIMAGE_H
 
 #include <fstream>
+
 
 #pragma pack(push, 1)
 struct TGA_Header {
@@ -122,5 +123,5 @@ public:
     void clear();
 };
 
-#endif //__IMAGE_H__
+#endif //TINYRENDERER_TGAIMAGE_H
 

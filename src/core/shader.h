@@ -8,8 +8,9 @@
 #include <algorithm>
 #include <cmath>
 
-#include "geometry/geometry.h"
+#include "geometry/vector.h"
 #include "loader/tgaimage.h"
+
 
 class Shader {
 private:
@@ -17,10 +18,10 @@ private:
     float diffuse_reflectivity_;
     float specular_reflectivity_;
     float specular_intensity_;
-    Vec3f light_dir_;
+    Geometry::Vec3f light_dir_;
 public:
-    Shader(float ambient_lighting, float diffuse_reflectivity, float specular_reflectivity, float specular_intensity, const Vec3f &light_dir);
-    TGAColor get_shaded_color(const TGAColor &color, const Vec3f &normal, const Vec3f &viewing_location, const Vec3f &current_pt) const;
+    Shader(float ambient_lighting, float diffuse_reflectivity, float specular_reflectivity, float specular_intensity, const Geometry::Vec3f &light_dir);
+    TGAColor get_shaded_color(const TGAColor &color, const Geometry::Vec3f &normal, const Geometry::Vec3f &viewing_location, const Geometry::Vec3f &current_pt) const;
 };
 
 

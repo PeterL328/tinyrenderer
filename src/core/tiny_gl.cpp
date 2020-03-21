@@ -4,6 +4,9 @@
 
 #include "tiny_gl.h"
 
+
+using namespace Geometry;
+
 namespace tiny_gl {
     void drawLine(TGAImage *image, const TGAColor &color, Vec2i v1, Vec2i v2) {
         int slope_error_prime = 0;

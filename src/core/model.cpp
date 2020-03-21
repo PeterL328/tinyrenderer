@@ -9,6 +9,7 @@
 #include <vector>
 #include "model.h"
 
+
 Model::Model(const std::string &filename) : verts_(), norms_(), texture_verts_(), faces_() {
     std::ifstream in;
     in.open(filename, std::ifstream::in);
@@ -20,23 +21,23 @@ Model::Model(const std::string &filename) : verts_(), norms_(), texture_verts_()
         char trash;
         if (!line.compare(0, 2, "v ")) {
             iss >> trash;
-            Vec3f v;
+            Geometry::Vec3f v;
             for (float &i : v.raw) iss >> i;
             verts_.push_back(v);
         } else if (!line.compare(0, 4, "vt  ")) {
             iss >> trash >> trash;
-            Vec2f v;
+            Geometry::Vec2f v;
             for (float &i : v.raw) iss >> i;
             texture_verts_.push_back(v);
         } else if (!line.compare(0, 4, "vn  ")) {
             iss >> trash >> trash;
-            Vec3f v;
+            Geometry::Vec3f v;
             for (float &i : v.raw) iss >> i;
             norms_.push_back(v);
         } else if (!line.compare(0, 2, "f ")) {
-            std::vector<Vec3i> f;
+            std::vector<Geometry::Vec3i> f;
             int itrash = 0;
-            Vec3i tmp;
+            Geometry::Vec3i tmp;
             iss >> trash;
             while (iss >> tmp[0] >> trash >> tmp[1] >> trash >> tmp[2]) {
                 for (int &i : tmp.raw) i--; // in wavefront obj all indices start at 1, not zero
@@ -63,32 +64,32 @@ int Model::ntexture_verts() {
     return static_cast<int>(texture_verts_.size());;
 }
 
-std::vector<Vec3i> Model::face(int idx) {
+std::vector<Geometry::Vec3i> Model::face(int idx) {
     return faces_[idx];
 }
 
-Vec3f Model::vert(int i) {
+Geometry::Vec3f Model::vert(int i) {
     return verts_[i];
 }
 
-Vec3f Model::vert(int iface, int nthvert) {
+Geometry::Vec3f Model::vert(int iface, int nthvert) {
     return verts_[faces_[iface][nthvert][0]];
 }
 
-Vec2f Model::texture_vert(int i) {
+Geometry::Vec2f Model::texture_vert(int i) {
     return texture_verts_[i];
 }
 
-Vec2f Model::texture_vert(int iface, int nthvert) {
+Geometry::Vec2f Model::texture_vert(int iface, int nthvert) {
     int temp = faces_[iface][nthvert][1];
     return texture_verts_[temp];
 }
 
-Vec3f Model::normal(int i) {
+Geometry::Vec3f Model::normal(int i) {
     return norms_[i].normalize();
 }
 
-Vec3f Model::normal(int iface, int nthvert) {
+Geometry::Vec3f Model::normal(int iface, int nthvert) {
     return norms_[faces_[iface][nthvert][2]].normalize();
 }
 
@@ -104,8 +105,8 @@ void Model::load_texture(const std::string &filename, const char *suffix, TGAIma
     }
 }
 
-TGAColor Model::diffuse(const Vec2f &uvf) {
-    Vec2i uv(
+TGAColor Model::diffuse(const Geometry::Vec2f &uvf) {
+    Geometry::Vec2i uv(
             uvf.x * static_cast<float>(diffusemap_.get_width()),
             uvf.y * static_cast<float>(diffusemap_.get_height())
     );
