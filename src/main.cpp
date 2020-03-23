@@ -32,8 +32,8 @@ int main(int argc, char **argv) {
     std::unique_ptr<Model> model(new Model(object_file_path));
 
     // View transformation setup
-    Geometry::Vec3f light_dir(0, 0, -200);
-    Geometry::Vec3f eye(-100, 0, 100);
+    Geometry::Vec3f light_source(1500, 1500, 1500);
+    Geometry::Vec3f eye(-200, -200, 500);
     Geometry::Vec3f up(0, 1, 0);
     Geometry::Vec3f model_center(0, 0, 0);
     Geometry::Matrix p_matrix = TinyGL::projection_matrix(camera_distance_on_z);
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     Geometry::Matrix c_matrix = TinyGL::camera_matrix(eye, model_center, up);
 
     // Shader setup
-    Shader shader{0.2f, 0.6f, 100.f, 5, light_dir};
+    Shader shader{0.2f, 0.6f, 0.2f, 10, light_source};
     TinyGL::drawFace(&image, p_matrix, v_port, c_matrix, model.get(), shader, eye, width, height);
 
     // Origin at the left bottom corner of the image
