@@ -9,11 +9,11 @@ namespace Geometry {
     Matrix::Matrix(int r, int c) : m(r, std::vector<float>(c, 0.f)), rows(r), cols(c) {
     }
 
-    int Matrix::nrows() {
+    int Matrix::nrows() const {
         return rows;
     }
 
-    int Matrix::ncols() {
+    int Matrix::ncols() const {
         return cols;
     }
 
@@ -25,7 +25,7 @@ namespace Geometry {
         return res;
     }
 
-    Matrix Matrix::transpose() {
+    Matrix Matrix::transpose() const {
         Matrix res(rows, cols);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {

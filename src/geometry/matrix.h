@@ -20,13 +20,13 @@ namespace Geometry {
     public:
         explicit Matrix(int r = DEFAULT_M_SIZE, int c = DEFAULT_M_SIZE);
 
-        inline int nrows();
+        inline int nrows() const;
 
-        inline int ncols();
+        inline int ncols() const;
 
         static Matrix identity(int dimensions);
 
-        Matrix transpose();
+        Matrix transpose() const;
 
         Matrix inverse();
 
