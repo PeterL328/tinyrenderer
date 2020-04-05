@@ -1,16 +1,24 @@
 #include <memory>
 
 #include <CLI/CLI.hpp>
+#include <QApplication>
 
-#include "geometry/matrix.h"
-#include "geometry/vector.h"
-#include "loader/tgaimage.h"
 #include "core/tiny_gl.h"
 #include "core/model.h"
 #include "core/shader.h"
+#include "geometry/matrix.h"
+#include "geometry/vector.h"
+#include "gui/mainwindow.h"
+#include "loader/tgaimage.h"
 
 
 int main(int argc, char **argv) {
+    // QT
+    QApplication a(argc, argv);
+    MainWindow w{};
+    w.show();
+    QApplication::exec();
+
     // Parse arguments
     CLI::App app{"Tiny rendering engine"};
 
