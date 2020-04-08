@@ -9,16 +9,9 @@
 #include "geometry/matrix.h"
 #include "geometry/vector.h"
 #include "gui/mainwindow.h"
-#include "loader/tgaimage.h"
 
 
 int main(int argc, char **argv) {
-    // QT
-    QApplication a(argc, argv);
-    MainWindow w{};
-    w.show();
-    QApplication::exec();
-
     // Parse arguments
     CLI::App app{"Tiny rendering engine"};
 
@@ -36,7 +29,10 @@ int main(int argc, char **argv) {
 
     CLI11_PARSE(app, argc, argv);
 
-    TGAImage image(width, height, TGAImage::RGB);
+    // Setup Qt
+    QApplication qt_app(argc, argv);
+    MainWindow window{width, height};
+
     std::unique_ptr<Model> model(new Model(object_file_path));
 
     // View transformation setup
@@ -50,10 +46,10 @@ int main(int argc, char **argv) {
 
     // Shader setup
     Shader shader{0.2f, 0.6f, 0.2f, 10, light_source};
-    TinyGL::drawFace(&image, p_matrix, v_port, c_matrix, model.get(), shader, eye, width, height);
+    TinyGL::drawFace(&window, p_matrix, v_port, c_matrix, model.get(), shader, eye, width, height);
 
-    // Origin at the left bottom corner of the image
-    image.flip_vertically();
-    image.write_tga_file(output_file_path);
-    return 0;
+    // Display application window
+    window.show();
+    window.display();
+    return qt_app.exec();
 }

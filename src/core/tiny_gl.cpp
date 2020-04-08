@@ -51,16 +51,16 @@ namespace TinyGL {
     }
 
     void
-    drawTriangle(TGAImage *image, Model *model, const Shader &shader, const Vec3f *pts, const Vec2f *texture_pts,
-                 const Vec3f *normal_pts, float *depth_buffer, const Vec3f& camera_source) {
+    drawTriangle(MainWindow *window, Model *model, const Shader &shader, const Vec3f *pts, const Vec2f *texture_pts,
+                 const Vec3f *normal_pts, float *depth_buffer, const Vec3f &camera_source) {
         /* Iterate all pixels in a bounding box that contains the triangle
          * and check if the pixel is within the triangle using the
          * barycentric coordinates
         */
         int x_max = 0;
-        int x_min = image->get_width() - 1;
+        int x_min = window->get_width() - 1;
         int y_max = 0;
-        int y_min = image->get_height() - 1;
+        int y_min = window->get_height() - 1;
         // Iterate the points to find the smallest bounding box that fits the triangle
         for (int i = 0; i < 3; i++) {
             if (pts[i].x > static_cast<float>(x_max)) x_max = pts[i].x;
@@ -86,18 +86,19 @@ namespace TinyGL {
                     texture_coord += texture_pts[i] * b_coord[i];
                     normal += normal_pts[i] * b_coord[i];
                 }
-                TGAColor color = model->diffuse(texture_coord);
-                if (depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(image->get_width()))] < p.z) {
-                    depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(image->get_width()))] = p.z;
-                    TGAColor shaded_color = shader.get_shaded_color(color, normal, camera_source, p);
-                    image->set(p.x, p.y, shaded_color);
+                TGAColor tg_color = model->diffuse(texture_coord);
+                QColor color = {tg_color.r, tg_color.g, tg_color.b};
+                if (depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(window->get_width()))] < p.z) {
+                    depth_buffer[static_cast<int>(p.x + p.y * static_cast<float>(window->get_height()))] = p.z;
+                    QColor shaded_color = shader.get_shaded_color(color, normal, camera_source, p);
+                    window->set_pixel(p.x, p.y, shaded_color);
                 }
             }
         }
     }
 
-    void drawFace(TGAImage *image, const Matrix &p_m, const Matrix &v_p, const Matrix &c_m, Model *model,
-                  const Shader &shader, const Vec3f& camera_source, const int width, const int height) {
+    void drawFace(MainWindow *window, const Matrix &p_m, const Matrix &v_p, const Matrix &c_m, Model *model,
+                  const Shader &shader, const Vec3f &camera_source, const int width, const int height) {
         // Depth buffer
         float depth_buffer[width * height];
         for (int i = 0; i < width * height; i++) {
@@ -114,7 +115,8 @@ namespace TinyGL {
                 normal_coords[j] = model->normal(i, j);
                 world2screen_coords[j] = hom2cart(v_p * p_m * c_m * cart2hom(world_coords[j]));
             }
-            drawTriangle(image, model, shader, world2screen_coords, texture_coords, normal_coords, depth_buffer, camera_source);
+            drawTriangle(window, model, shader, world2screen_coords, texture_coords, normal_coords, depth_buffer,
+                         camera_source);
         }
     }
 
